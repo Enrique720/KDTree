@@ -28,6 +28,11 @@ void readImages(string infile, string outfile, int haar){
         CImg<float> C = B.crop(0,0,9,9);    
         vector<float> vc = vectorizar(C);
         output << temp << " ";
+        string type;
+        for(int i=6;temp[i]!='/';i++){
+            type+=temp[i];
+        }
+        output<<type<<" ";
         for(auto valor : vc){
             output << valor << " ";
         }
@@ -40,4 +45,6 @@ void readImages(string infile, string outfile, int haar){
 
 int main(){
     readImages("db.txt","data.txt",4);
+   
+
 }
