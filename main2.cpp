@@ -1,8 +1,3 @@
-
-//#include "ann_1.1.2/include/ANN/ANN.h"
-//#include "ann_1.1.2/src/ANN.cpp"
-//#include "ann_1.1.2/src/kd_tree.cpp"
-
 #include <ANN/ANN.h>
 #include "CImg.h"
 #include <bits/stdc++.h>
@@ -26,7 +21,6 @@ vector<double> Vectorizar(string filename, int width, int height, int cuts=4)
     return R;
 }
 
-
 int main() {
 const int N = 1000;
     const unsigned int K = 10;
@@ -34,13 +28,11 @@ const int N = 1000;
     ifstream infile;
     infile.open("data.txt");
     string line, name, emocion;
-    //ANNkd_tree::ANNkd_tree tree;
 
     int nPts; // actual number of data points
     ANNpointArray dataPts; // data points
     
     int dimension = 100;
-    //dataPts = annAllocPts(maxPts, dimension);
 
     map<ANNpoint, pair<string,string>> ptrs;
     int i=0;
@@ -49,8 +41,7 @@ const int N = 1000;
         i++;
         int j = 0;
         ANNpoint pp;
-        annAllocPt(dimension);
-
+        pp = annAllocPt(dimension);
         stringstream ss(line);
         if(getline(ss, line, ' ')){
             name = line;
@@ -63,20 +54,27 @@ const int N = 1000;
             coor.push_back(pp);
             //coor.push_back(stod(line));
         }
-        //Point_d* pp = new Point_d(coor.begin(),coor.end());
         ptrs[pp] = {name,emocion};
-        //tree.insert(*pp);
     }
     dataPts = annAllocPts(i, dimension);
-
     for(int k = 0; k < i ; k++){
         dataPts[k] = coor[k];
     }
-    auto kdTree = new ANNkd_tree(dataPts,nPts,dimension);
-    ANNpoint queryPt = annAllocPt(dimension);
+    /*for(int k = 0; k < i ; k++){
+        for(int p = 0; p < dimension; p++){
+            cout << dataPts[k][p] << " ";
+        }
+        cout << endl;
+    }*/
+
+    ANNkd_tree* kdTree;
+    kdTree = new ANNkd_tree(dataPts,i,dimension);
+    ANNpoint queryPt;
+    queryPt = annAllocPt(dimension);
     ifstream testfile;
     testfile.open("input.txt");
-    while (getline(infile, line)) {
+
+    while (getline(testfile, line)) {
         //vector<double> coor;
         stringstream ss(line);
         if(getline(ss, line, ' ')){
@@ -90,15 +88,20 @@ const int N = 1000;
             queryPt[j++] = stod(line);
             //coor.push_back(stod(line));
         }
+        
         ANNidxArray nnIdx; // near neighbor indices
         ANNdistArray dists; // near neighbor distances
         int k=5;
         nnIdx = new ANNidx[k]; // allocate near neigh indices
         dists = new ANNdist[k];
         kdTree->annkSearch(queryPt,k,nnIdx,dists);
+        cout << "%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
         for (int i = 0; i < k; i++) { 
             dists[i] = sqrt(dists[i]); 
             cout << i << " " << nnIdx[i] << " " << dists[i] << "\n";
+            cout << "first: " <<ptrs[dataPts[nnIdx[i]]].first << " second: ";
+            cout << ptrs[dataPts[nnIdx[i]]].second << endl; 
+            cout << "-------------------------" << endl;
         }
     }
 }
