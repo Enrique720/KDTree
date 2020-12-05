@@ -1,3 +1,7 @@
-ck/
-CK+48/
 archive.zip
+.idea/
+CMakeLists.txt
+cmake-build-debug/
+CImg.h
+.vscode/
+a.out
