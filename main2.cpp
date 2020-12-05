@@ -33,8 +33,8 @@ const int N = 1000;
     ANNpointArray dataPts; // data points
     
     int dimension = 100;
-
-    map<ANNpoint, pair<string,string>> ptrs;
+    vector<pair<string,string>> ptrs;
+    //map<ANNpoint, pair<string,string>> ptrs;
     int i=0;
     vector<ANNpoint> coor;
     while (getline(infile, line)) {
@@ -51,10 +51,11 @@ const int N = 1000;
         }
         while(getline(ss, line, ' ')){
             pp[j++] = stod(line);
-            coor.push_back(pp);
             //coor.push_back(stod(line));
         }
-        ptrs[pp] = {name,emocion};
+        coor.push_back(pp);
+        //ptrs[pp] = {name,emocion};
+        ptrs.push_back({name,emocion});
     }
     dataPts = annAllocPts(i, dimension);
     for(int k = 0; k < i ; k++){
@@ -70,7 +71,7 @@ const int N = 1000;
     ANNkd_tree* kdTree;
     kdTree = new ANNkd_tree(dataPts,i,dimension);
     ANNpoint queryPt;
-    queryPt = annAllocPt(dimension);
+    queryPt = annAllocPt(dimension); 
     ifstream testfile;
     testfile.open("input.txt");
 
@@ -79,6 +80,7 @@ const int N = 1000;
         stringstream ss(line);
         if(getline(ss, line, ' ')){
             name = line;
+
         }
         if(getline(ss, line, ' ')){
             emocion = line;
@@ -99,8 +101,8 @@ const int N = 1000;
         for (int i = 0; i < k; i++) { 
             dists[i] = sqrt(dists[i]); 
             cout << i << " " << nnIdx[i] << " " << dists[i] << "\n";
-            cout << "first: " <<ptrs[dataPts[nnIdx[i]]].first << " second: ";
-            cout << ptrs[dataPts[nnIdx[i]]].second << endl; 
+            cout << "first: " <<ptrs[nnIdx[i]].first << " second: ";
+            cout << ptrs[nnIdx[i]].second << endl; 
             cout << "-------------------------" << endl;
         }
     }
