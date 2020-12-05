@@ -20,7 +20,7 @@ if ( NOT CGAL_FOUND )
 
 endif()
 
-add_executable(kdtree main.cpp CImg.h)
+add_executable(kdtree main.cpp CImg.h Point.h Distance.h)
 
 target_link_libraries(kdtree Threads::Threads)
 target_link_libraries(kdtree X11)

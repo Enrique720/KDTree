@@ -3,19 +3,21 @@
 #include <CGAL/Manhattan_distance_iso_box_point.h>
 #include <CGAL/K_neighbor_search.h>
 #include <CGAL/Search_traits_d.h>
+#include <CGAL/Search_traits.h>
+#include <CGAL/Orthogonal_k_neighbor_search.h>
+#include <bits/stdc++.h>
 #include "CImg.h"
 
 using namespace cimg_library;
 using namespace std;
 
-typedef CGAL::Epick_d<CGAL::Dimension_tag<4> > Kernel;
+typedef CGAL::Epick_d<CGAL::Dimension_tag<100>> Kernel;
 typedef Kernel::Point_d Point_d;
-typedef CGAL::Random_points_in_cube_d<Point_d> Random_points_iterator;
 typedef Kernel::Iso_box_d Iso_box_d;
 typedef Kernel TreeTraits;
 typedef CGAL::Manhattan_distance_iso_box_point<TreeTraits> Distance;
-typedef CGAL::K_neighbor_search<TreeTraits, Distance> Neighbor_search;
-typedef Neighbor_search::Tree Tree;
+typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits, Distance> K_neighbor_search;
+typedef K_neighbor_search::Tree Tree;
 
 vector<double> Vectorizar(string filename, int width, int height, int cuts=4)
 {
@@ -33,20 +35,59 @@ vector<double> Vectorizar(string filename, int width, int height, int cuts=4)
 int main() {
     const int N = 1000;
     const unsigned int K = 10;
+
     Tree tree;
-    Random_points_iterator rpit(4,1000.0);
-    for(int i = 0; i < N; i++){
-        tree.insert(*rpit++);
+
+    ifstream infile;
+    infile.open("data.txt");
+    string line, name, emocion;
+    map<Point_d*, pair<string,string>> ptrs;
+    while (getline(infile, line)) {
+        vector<double> coor;
+        stringstream ss(line);
+        if(getline(ss, line, ' ')){
+            name = line;
+        }
+        if(getline(ss, line, ' ')){
+            emocion = line;
+        }
+        while(getline(ss, line, ' ')){
+            coor.push_back(stod(line));
+        }
+        Point_d* pp = new Point_d(coor.begin(),coor.end());
+        ptrs[pp] = {name,emocion};
+        tree.insert(*pp);
     }
-    Point_d pp(0.1,0.1,0.1,0.1);
-    Point_d qq(0.2,0.2,0.2,0.2);
-    Iso_box_d query(pp,qq);
+
+    ifstream testfile;
+    testfile.open("input.txt");
+    while (getline(infile, line)) {
+        vector<double> coor;
+        stringstream ss(line);
+        if(getline(ss, line, ' ')){
+            name = line;
+        }
+        if(getline(ss, line, ' ')){
+            emocion = line;
+        }
+        while(getline(ss, line, ' ')){
+            coor.push_back(stod(line));
+        }
+        Point_d qq(coor.begin(),coor.end());
+        K_neighbor_search search(tree, qq, 5);
+        for(K_neighbor_search::iterator it = search.begin(); it != search.end(); ++it){
+            cout << it->first << '\n';
+        }
+    }
+
+    /*Point_d pp(0.1,0.1,0.1,0.1);
+
     Distance tr_dist;
-    Neighbor_search N1(tree, query, 5, 10.0, false); // eps=10.0, nearest=false
+    Neighbor_search N1(tree, pp, n); // eps=10.0, nearest=false
     std::cout << "For query rectangle = [0.1, 0.2]^4 " << std::endl
               <<  "the " << K << " approximate furthest neighbors are: " << std::endl;
     for (Neighbor_search::iterator it = N1.begin();it != N1.end();it++) {
         std::cout << " Point " << it->first << " at distance  " << tr_dist.inverse_of_transformed_distance(it->second) << std::endl;
-    }
+    }*/
     return 0;
 }
