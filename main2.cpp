@@ -93,17 +93,20 @@ const int N = 1000;
         
         ANNidxArray nnIdx; // near neighbor indices
         ANNdistArray dists; // near neighbor distances
-        int k=5;
+        int k=54;
         nnIdx = new ANNidx[k]; // allocate near neigh indices
         dists = new ANNdist[k];
         kdTree->annkSearch(queryPt,k,nnIdx,dists);
         cout << "%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+        double precision = 0;
         for (int i = 0; i < k; i++) { 
             dists[i] = sqrt(dists[i]); 
             cout << i << " " << nnIdx[i] << " " << dists[i] << "\n";
             cout << "first: " <<ptrs[nnIdx[i]].first << " second: ";
             cout << ptrs[nnIdx[i]].second << endl; 
             cout << "-------------------------" << endl;
+            if (ptrs[nnIdx[i]].second  == emocion)precision++;
         }
+        cout<<"la precision de esta prueba fue: "<<precision/k <<endl;
     }
 }
